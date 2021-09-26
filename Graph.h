@@ -14,11 +14,10 @@ public:
     Graph();
     ~Graph();
     void add_vertex(id_t vertex_id);
-    void add_edge(id_t from_id, id_t to_id, weight_t weight);
-
-    void print() const;
-    
+    void add_edge(id_t from_id, id_t to_id, weight_t weight);    
     bool is_acyclic() const;
+
+    void topological_forest(std::list<int>& result) const;
 
 private:
 
@@ -35,7 +34,10 @@ private:
     int get_array_position(id_t vertex_id) const;
 
     void order_forest(Order order_mode, std::vector<int>& result) const;
-    void order(Order order_mode, int from_id, bool* visited, int& order_n, std::vector<int>& result) const;
+    void order(Order order_mode, int from_index, bool* visited, int& order_n, std::vector<int>& result) const;
+
+    
+    void topological(int from_index, bool* visited, std::list<int>& result) const;
 };
 
 #endif

@@ -1,4 +1,7 @@
+#include <map>
 #include "Vertex.h"
+
+using namespace std;
 
 template <typename id_t, typename weight_t>
 Vertex<id_t, weight_t>::Vertex() {}
@@ -12,13 +15,15 @@ void Vertex<id_t, weight_t>::add_edge_to(id_t to_vertex_id, weight_t weight)
     adj_map[to_vertex_id] = weight;
 }
 
-/*
 template <typename id_t, typename weight_t>
 bool Vertex<id_t, weight_t>::exists_edge_to(id_t to_vertex_id) const
 {
-    return false;   //////// temp
+    typename map<id_t, weight_t>::const_iterator it = adj_map.find(to_vertex_id);
+    if (it == adj_map.end())
+        return false;
+    else
+        return true;
 }
-*/
 
 template <typename id_t, typename weight_t>
 const typename std::map<id_t, weight_t>& Vertex<id_t, weight_t>::get_adj_map() const

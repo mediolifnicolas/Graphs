@@ -57,25 +57,6 @@ void Graph<id_t, weight_t>::add_edge(id_t from_id, id_t to_id, weight_t weight)
 }
 
 template <typename id_t, typename weight_t>
-void Graph<id_t, weight_t>::print() const
-{
-    for (unsigned from_index = 0; from_index < vertex_count; from_index++)
-    {
-        id_t vertex_id = vertex_arr[from_index].vertex_id;
-
-        const map<int, weight_t> adj_map = vertex_arr[from_index].vertex.get_adj_map();
-        typename map<int, weight_t>::const_iterator it = adj_map.begin();
-
-        while (it != adj_map.end())
-        {
-            cout << vertex_id << " -> " << vertex_arr[it->first].vertex_id << " (Weight = " << it->second << ")" << endl;
-            it++;
-        }
-
-    }
-}
-
-template <typename id_t, typename weight_t>
 void Graph<id_t, weight_t>::order_forest(Order order_mode, vector<int>& result) const
 {
     // Clear vector and avoid realloc if contains data
@@ -96,17 +77,17 @@ void Graph<id_t, weight_t>::order_forest(Order order_mode, vector<int>& result) 
 }
 
 template <typename id_t, typename weight_t>
-void Graph<id_t, weight_t>::order(Order order_mode, int from_id, bool *visited, int & order_n, vector<int>& result) const
+void Graph<id_t, weight_t>::order(Order order_mode, int from_index, bool *visited, int & order_n, vector<int>& result) const
 {
-    visited[from_id] = true;
+    visited[from_index] = true;
     
     if (order_mode == Order::PRE)
     {
-        result[from_id] = order_n;
+        result[from_index] = order_n;
         order_n += 1;
     }
 
-    const map<int, weight_t> adj_map = vertex_arr[from_id].vertex.get_adj_map();
+    const map<int, weight_t> adj_map = vertex_arr[from_index].vertex.get_adj_map();
     typename map<int, weight_t>::const_iterator it = adj_map.begin();
 
     while (it != adj_map.end())
@@ -119,7 +100,7 @@ void Graph<id_t, weight_t>::order(Order order_mode, int from_id, bool *visited, 
 
     if (order_mode == Order::POST)
     {
-        result[from_id] = order_n;
+        result[from_index] = order_n;
         order_n += 1;
     }
 }
@@ -150,6 +131,40 @@ bool Graph<id_t, weight_t>::is_acyclic() const
         vertex_index++;
     }
     return !(back_edge_found);
+}
+
+template <typename id_t, typename weight_t>
+void Graph<id_t, weight_t>::topological_forest(std::list<int>& result) const
+{
+    result.resize(0);
+
+    bool* visited = new bool[vertex_count];
+    for (unsigned i = 0; i < vertex_count; i++)
+        visited[i] = false;
+
+    for (unsigned i = 0; i < vertex_count; i++)
+        if (visited[i] == false)
+            topological(i, visited, result);
+
+    delete[] visited;
+}
+
+
+template <typename id_t, typename weight_t>
+void Graph<id_t, weight_t>::topological(int from_index, bool* visited, std::list<int>& result) const
+{
+    visited[from_index] = true;
+
+    const map<int, weight_t> adj_map = vertex_arr[from_index].vertex.get_adj_map();
+    typename map<int, weight_t>::const_iterator it = adj_map.begin();
+
+    while (it != adj_map.end())
+    {
+        if (visited[it->first] == false)
+            topological(it->first, visited, result);
+        it++;
+    }
+    result.push_front(from_index);
 }
 
 template class Graph<int, int>;
