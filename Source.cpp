@@ -2,18 +2,14 @@
 #include <list>
 #include "Graph.h"
 #include "ExampleGraphs.h"
+#include "DijkstraHeap.h"
 
 using namespace std;
 
 int main()
 {
-    Graph<int, int> graph = get_graph_2();
-
-    list<int> t;
-    graph.topological_forest(t);
-
-    for (auto q : t)
-        cout << q << " ";
+    Graph<int, unsigned> graph = get_graph_4();
+    graph.dijkstra(3);
 
     return 0;
 }

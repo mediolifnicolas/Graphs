@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <list>
+#include <set>
 #include "Vertex.h"
 
 enum class Order { PRE, POST };
@@ -17,7 +18,12 @@ public:
     void add_edge(id_t from_id, id_t to_id, weight_t weight);    
     bool is_acyclic() const;
 
-    void topological_forest(std::list<int>& result) const;
+    /*
+     * Dijkstra implementation using heap data structure
+     * O( max(n log(n), e log(n)) )
+     * Note: weights must be non negative
+     */
+    void dijkstra(int from_index) const;
 
 private:
 
@@ -36,8 +42,10 @@ private:
     void order_forest(Order order_mode, std::vector<int>& result) const;
     void order(Order order_mode, int from_index, bool* visited, int& order_n, std::vector<int>& result) const;
 
-    
+    void topological_forest(std::list<int>& result) const;
     void topological(int from_index, bool* visited, std::list<int>& result) const;
+
+    void print_dijkstra_results(std::vector<int>& parent, std::vector<weight_t>& total_cost, unsigned root_index) const;
 };
 
 #endif

@@ -26,6 +26,16 @@ bool Vertex<id_t, weight_t>::exists_edge_to(id_t to_vertex_id) const
 }
 
 template <typename id_t, typename weight_t>
+weight_t Vertex<id_t, weight_t>::get_weight_to(id_t to_vertex_id) const
+{
+    typename map<id_t, weight_t>::const_iterator it = adj_map.find(to_vertex_id);
+    if (it == adj_map.end())
+        return weight_t(unsigned(-1));
+    else
+        return it->second;
+}
+
+template <typename id_t, typename weight_t>
 const typename std::map<id_t, weight_t>& Vertex<id_t, weight_t>::get_adj_map() const
 {
     return adj_map;

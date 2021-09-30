@@ -1,6 +1,8 @@
 #include <iostream>
+#include <set>
 #include "Graph.h"
 #include "Vertex.h"
+#include "DijkstraHeap.h"
 
 constexpr int DEFAULT_VERTEX_RESERVE = 50;
 
@@ -165,6 +167,97 @@ void Graph<id_t, weight_t>::topological(int from_index, bool* visited, std::list
         it++;
     }
     result.push_front(from_index);
+}
+
+template <typename id_t, typename weight_t>
+void Graph<id_t, weight_t>::dijkstra(int vertex_id) const
+{
+    int from_index = get_array_position(vertex_id);
+
+    // Initialization
+
+    DijkstraHeap<weight_t> heap(vertex_count);
+    vector<int> parent;
+    vector<weight_t> total_cost;
+
+    parent.resize(vertex_count);
+    total_cost.resize(vertex_count, 0);
+
+    for (unsigned i = 0; i < vertex_count; i++)
+    {
+        parent[i] = from_index;
+        if (i != from_index)
+            heap.add_vertex(i, vertex_arr[from_index].vertex.get_weight_to(i));
+    }
+
+    // Iterate n-1 times
+
+    for (int i = 1; i <= vertex_count - 1; i++)
+    {
+        pair<unsigned, weight_t> w = heap.get_root();
+        heap.del_root();
+        
+        total_cost[w.first] = w.second;
+
+        const std::map<int, weight_t> adj_map = vertex_arr[w.first].vertex.get_adj_map();
+        typename map<int, weight_t>::const_iterator it = adj_map.begin();
+
+        while (it != adj_map.end())
+        {
+            if (heap.exists_vertex(it->first))
+            {
+                weight_t weight_in_heap = heap.get_weight_to(it->first);
+
+                if (w.second + it->second < weight_in_heap)
+                {
+                    heap.modify_arbitrary(it->first, w.second + it->second);
+                    parent[it->first] = w.first;
+                }
+            }
+
+            it++;
+        }
+    }
+
+    print_dijkstra_results(parent, total_cost, from_index);
+}
+
+template <typename id_t, typename weight_t>
+void Graph<id_t, weight_t>::print_dijkstra_results(vector<int>& parent, vector<weight_t>& total_cost, unsigned root_index) const
+{
+    for (unsigned vertex = 0; vertex < vertex_count; vertex++)
+    {
+        cout << "Shortest path to: " << vertex_arr[vertex].vertex_id << endl;
+        
+        if (total_cost[vertex] != unsigned(-1))
+        {
+            // Some path found
+
+            cout << "Weight: " << total_cost[vertex] << endl;
+
+            unsigned p = vertex;
+
+            list<unsigned> path;
+
+            while (p != root_index)
+            {
+                path.push_back(p);
+                p = parent[p];
+            }
+            path.push_back(root_index);
+
+            cout << "Path: ";
+            while (!path.empty())
+            {
+                cout << vertex_arr[path.back()].vertex_id << " ";
+                path.pop_back();
+            }
+            cout << endl << endl;
+        }
+        else
+            cout << "No path found" << endl << endl;
+
+    }
 }
 
 template class Graph<int, int>;
