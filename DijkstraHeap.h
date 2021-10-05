@@ -84,6 +84,7 @@ DijkstraHeap<weight_t>::~DijkstraHeap()
 template <typename weight_t>
 void DijkstraHeap<weight_t>::add_vertex(unsigned vertex, weight_t weight)
 {
+    
     heap_array[heap_len] = make_pair(vertex, weight);
     heap_len++;
     vertex_position[vertex] = heap_len - 1;

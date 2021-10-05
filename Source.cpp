@@ -9,7 +9,7 @@ using namespace std;
 int main()
 {
     Graph<int, unsigned> graph = get_graph_4();
-    graph.dijkstra(3);
+    graph.dijkstra(4);
 
     return 0;
 }
